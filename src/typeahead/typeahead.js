@@ -211,11 +211,17 @@ angular.module('ui.bootstrap.typeahead', ['ui.bootstrap.position', 'ui.bootstrap
         $setModelValue(originalScope, model);
         modelCtrl.$setValidity('editable', true);
 
-        onSelectCallback(originalScope, {
+        var refire = onSelectCallback(originalScope, {
           $item: item,
           $model: model,
           $label: parserResult.viewMapper(originalScope, locals)
         });
+
+        if (refire) {
+          $timeout(function(){
+            modelCtrl.$setViewValue(model);
+          });
+        }
 
         resetMatches();
 
