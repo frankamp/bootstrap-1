@@ -32,7 +32,12 @@ angular.module('ui.bootstrap.typeahead', ['ui.bootstrap.position', 'ui.bootstrap
   .directive('typeahead', ['$compile', '$parse', '$q', '$timeout', '$document', '$position', 'typeaheadParser',
     function ($compile, $parse, $q, $timeout, $document, $position, typeaheadParser) {
 
-  var HOT_KEYS = [9, 13, 27, 38, 40];
+  var TAB_KEY = 9;
+  var ENTER_KEY = 13;
+  var ESC_KEY = 27;
+  var ARROW_UP_KEY = 38;
+  var ARROW_DOWN_KEY = 40;
+  var HOT_KEYS = [TAB_KEY, ENTER_KEY, ESC_KEY, ARROW_UP_KEY, ARROW_DOWN_KEY];
 
   return {
     require:'ngModel',
@@ -223,30 +228,31 @@ angular.module('ui.bootstrap.typeahead', ['ui.bootstrap.position', 'ui.bootstrap
         element[0].focus();
       };
 
-      //bind keyboard events: arrows up(38) / down(40), enter(13) and tab(9), esc(27)
       element.bind('keydown', function (evt) {
-
         //typeahead is open and an "interesting" key was pressed
         if (scope.matches.length === 0 || HOT_KEYS.indexOf(evt.which) === -1) {
+          if (evt.which === ENTER_KEY){
+            evt.preventDefault();
+          }
           return;
         }
 
         evt.preventDefault();
 
-        if (evt.which === 40) {
+        if (evt.which === ARROW_DOWN_KEY) {
           scope.activeIdx = (scope.activeIdx + 1) % scope.matches.length;
           scope.$digest();
 
-        } else if (evt.which === 38) {
+        } else if (evt.which === ARROW_UP_KEY) {
           scope.activeIdx = (scope.activeIdx ? scope.activeIdx : scope.matches.length) - 1;
           scope.$digest();
 
-        } else if (evt.which === 13 || evt.which === 9) {
+        } else if (evt.which === ENTER_KEY || evt.which === TAB_KEY) {
           scope.$apply(function () {
             scope.select(scope.activeIdx);
           });
 
-        } else if (evt.which === 27) {
+        } else if (evt.which === ESC_KEY) {
           evt.stopPropagation();
 
           resetMatches();
